@@ -7,21 +7,18 @@
 ##
 
 ProgramName="Remove old Ubuntu Kernels"
-ProgramVersion="0.1.0"
+ProgramVersion="0.1.1"
 
 OldKernels="$(
-    dpkg -l |
-    egrep -i 'linux-(image(-extra)?|headers)-[0-9]+' |
-    fgrep -v -- "$( uname -r | egrep -o '\-[0-9]{2}' )" |
-    awk '{ print $2 }'
+    dpkg -l \
+        | egrep -i 'linux-(image(-extra)?|headers)-[0-9]+' \
+        | fgrep -v -- "$( uname -r | egrep -o '\-[0-9]{2}' )" \
+        | awk '{ print $2 }'
 )"
 
-echo
-echo "$ProgramName v${ProgramVersion}"
-echo
+echo -e "\n$ProgramName v${ProgramVersion}\n"
 
-echo "Current Kernel: $( uname -r )"
-echo
+echo -e "Current Kernel: $( uname -r )\n"
 
 if [ -z "$OldKernels" ] ; then
     echo "I didn't find any old kernels installed on this system."
