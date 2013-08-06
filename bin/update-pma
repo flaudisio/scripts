@@ -13,7 +13,7 @@ while [ $# -gt 0 ] ; do
     case $1 in
         -b|--base-dir)
             [ -n "$2" ] || {
-                echo "Fatal: missing operand for '$1'"
+                echo "Fatal: missing operand for '$1'" >&2
                 exit 1
             }
             PMA_DIR="$2"
@@ -22,7 +22,7 @@ while [ $# -gt 0 ] ; do
 
         -t|--to)
             [ -n "$2" ] || {
-                echo "Fatal: missing operand for '$1'"
+                echo "Fatal: missing operand for '$1'" >&2
                 exit 1
             }
             PMA_VERSION="$2"
@@ -45,8 +45,8 @@ echo -e "\nDownloading '${PMA_PACKAGE}'..."
 
 wget --continue \
     "http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/${PMA_VERSION}/${PMA_PACKAGE}/download" \
-    -O "${PMA_PACKAGE}" > /dev/null 2>&1 || {
-        echo "Fatal error. Aborting..."
+    -O "${PMA_PACKAGE}" &> /dev/null || {
+        echo "Fatal error. Aborting..." >&2
         exit 1
     }
 
