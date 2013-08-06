@@ -9,15 +9,17 @@
 #
 ##
 
+DirZones="/etc/bind/zones"
+
 die() { echo -e "$*" >&2 ; exit 1 ; }
 
 [ $# -lt 1 ] &&
     die "fatal: missing operand."
 
-[ ! which named-checkzone > /dev/null 2>&1 ] &&
+[ ! which named-checkzone &> /dev/null ] &&
     die "fatal: named-checkzone not found."
 
-[ ! -d /etc/bind/zones ] &&
+[ ! -d "$DirZones" ] &&
     die "fatal: BIND zones folder not found."
 
 ## Settings
@@ -30,7 +32,7 @@ N="\e[m"
 ## Functions
 
 _check() {
-    named-checkzone $1 /etc/bind/zones/${1}.db > /dev/null 2>&1
+    named-checkzone $1 "$DirZones/${1}.db" &> /dev/null
 
     [ $? -eq 0 ] &&
         echo -en "[ ${G}OK${N} ] " \
@@ -45,14 +47,14 @@ _check() {
 echo -e "\nStarting BIND Zone Check at $( date )\n"
 
 if [ "$1" = "-a" ] ; then
-    ls -1 /etc/bind/zones/*.db |
+    ls -1 "$DirZones"/*.db |
     while read file ; do
         domain="$( basename "$file" | sed 's/\.db$//' )"
 
         _check $domain
     done
 else
-    while [ $# -gt 0 ] ; do
+    while [[ $# > 0 ]] ; do
         _check $1
         shift
     done
