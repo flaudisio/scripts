@@ -2,7 +2,6 @@ Scripts - TODO
 ==============
 
 - Geral
-  . Criar bibliotecas comuns (função die, etc) usando o Bashpool
   . Padronizar idioma de mensagens
 
 - gen-ssl-cert
