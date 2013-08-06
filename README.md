@@ -1,4 +1,4 @@
 Scripts
 =======
 
-Scripts diversos e não raramente pouco testados. Use com precaução.
+Scripts diversos e para uso específico. Poucos testados. Use com cuidado.
