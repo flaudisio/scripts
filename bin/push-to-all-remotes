@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # push-to-all-remotes
-# Executa 'git push [options]' em todos os repositórios remotos.
+# Executa 'git push [options]' em todos os repositórios remotos
 #
 # Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
 # Data      : Tue Aug  6 13:39:14 BRT 2013
