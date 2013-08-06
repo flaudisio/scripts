@@ -1,0 +1,111 @@
+#!/bin/bash
+#
+# mkscript
+# Cria um script de modelo
+#
+# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
+# Data      : Mon Jun 24 14:24:47 BRT 2013
+# Licença   : GPLv2
+#
+##
+
+##
+## Configurações
+##
+
+ProgramName="$( basename "$0" )"
+ProgramVersion="0.2.0"
+
+Username=""
+ScriptName=""
+ScriptDescription="Um Script qualquer"
+
+
+##
+## Funções
+##
+
+set_username() {
+    Username="$(
+        getent passwd $( whoami ) \
+            | cut -d ':' -f 5 \
+            | cut -d ',' -f 1
+    )"
+
+    [ -z "$Username" ] && Username="$( whoami )"
+
+    return 0
+}
+
+create_script() {
+    if [ -n "$1" ] ; then
+        ScriptName="$1"
+        true > $ScriptName
+    else
+        ScriptName="$( mktemp script-XXXX.sh )"
+    fi
+
+    [ $? -ne 0 ] && {
+        echo "Error ao criar script '${ScriptName}'." >&2
+        exit 1
+    }
+
+    echo "Criado '${ScriptName}'."
+
+    return 0
+}
+
+add_script_data() {
+    cat <<_EOF_ > $ScriptName
+#!/bin/bash
+#
+# $ScriptName - $ScriptDescription
+#
+# Autor     : $Username
+# Data      : $( date )
+#
+##
+
+
+
+exit 0
+_EOF_
+
+    return 0
+}
+
+
+##
+## Entrada
+##
+
+# Parâmetros
+while true ; do
+    case $1 in
+        -d|--description)
+            [ -z "$2" ] && {
+                echo "Erro fatal: descrição não definida." >&2
+                exit 1
+            }
+
+            ScriptDescription="$2"
+            shift 2
+        ;;
+
+        *) break ;;
+    esac
+done
+
+set_username
+
+create_script "$1"
+
+chmod -v 755 $ScriptName || exit 1
+
+add_script_data
+
+echo "Abrindo nano..."
+
+nano +10,1 $ScriptName
+
+exit 0

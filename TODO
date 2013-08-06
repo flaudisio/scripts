@@ -7,6 +7,10 @@ Scripts - TODO
 - gen-ssl-cert
   . Refatorar, traduzir, etc.
 
+- mkscript
+  . Refatorar
+  . Melhorar documentação
+
 - nginx-sites
   . Evitar sites repetidos (distinguir HTTP de HTTPS)
   . Melhorar saída (organização)
