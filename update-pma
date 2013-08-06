@@ -1,0 +1,89 @@
+#!/bin/bash
+
+## Settings
+
+BASEDIR="$( readlink -f "$( dirname "$BASH_SOURCE" )" )"
+
+PMA_DIR="pma"
+
+PMA_VERSION="3.5.7"
+
+# Parse arguments
+while [ $# -gt 0 ] ; do
+    case $1 in
+        -b|--base-dir)
+            [ -n "$2" ] || {
+                echo "Fatal: missing operand for '$1'"
+                exit 1
+            }
+            PMA_DIR="$2"
+            shift
+        ;;
+
+        -t|--to)
+            [ -n "$2" ] || {
+                echo "Fatal: missing operand for '$1'"
+                exit 1
+            }
+            PMA_VERSION="$2"
+            shift
+        ;;
+    esac
+    shift
+done
+
+# Remove trailing slash(es)
+PMA_DIR="$( echo "$PMA_DIR" | sed -r 's|/+$||g' )"
+
+PMA_BACKUP_DIR="./${PMA_DIR}-$( date +'%Y%m%d-%H%M%S' )"
+
+PMA_PACKAGE="phpMyAdmin-${PMA_VERSION}-english.tar.bz2"
+
+## Main
+
+echo -e "\nDownloading '${PMA_PACKAGE}'..."
+
+wget --continue \
+    "http://sourceforge.net/projects/phpmyadmin/files/phpMyAdmin/${PMA_VERSION}/${PMA_PACKAGE}/download" \
+    -O "${PMA_PACKAGE}" > /dev/null 2>&1 || {
+        echo "Fatal error. Aborting..."
+        exit 1
+    }
+
+if [ -d "$PMA_DIR" ] ; then
+    echo -e "\nBacking up '$PMA_DIR' folder to '$( basename "$PMA_BACKUP_DIR" )'..."
+
+    mv "$PMA_DIR" "${PMA_BACKUP_DIR}" || exit 1
+fi
+
+
+echo -e "\nExtracting phpMyAdmin package..."
+
+tar xjf "$PMA_PACKAGE" || exit 1
+
+
+echo -e "\nRenaming to '$PMA_DIR'..."
+
+mv "phpMyAdmin-${PMA_VERSION}-english" $PMA_DIR || exit 1
+
+
+if [ -d "${PMA_BACKUP_DIR}" ] ; then
+    if [ -f "${PMA_BACKUP_DIR}/config.inc.php" ] ; then
+        echo -e "\nCreating pMA configuration file..."
+
+        cp "${PMA_BACKUP_DIR}/config.inc.php" $PMA_DIR || exit 1
+    fi
+else
+    echo -e "\nBackup folder not found. Skipping config creation..."
+fi
+
+
+echo -e "\nRemoving downloaded package..."
+
+rm "${PMA_PACKAGE:-nullfile}" || exit 1
+
+
+echo -e "\nDone.\n"
+
+
+exit 0

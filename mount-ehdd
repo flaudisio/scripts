@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# mount-ehdd
+# Utilitário para montagem de um HD externo com sistema ext4
+#
+# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
+# Data      : Tue Aug  6 13:31:47 BRT 2013
+#
+# Licença   : GPLv2
+#
+##
+
+##
+## Configurações
+##
+
+Program="$( basename $0 )"
+
+MountOptions="rw,nosuid,nodev,uhelper=udisks2"
+
+Device="$1"
+
+TargetDir="$2"
+
+User="$( whoami )"
+
+
+##
+## Funções
+##
+
+die() {
+    [ -n "$1" ] && echo -e "$*" >&2
+    exit 1
+}
+
+
+##
+## Entrada
+##
+
+# Alguns testes de sanidade
+[ -z "$Device" ]    && die "${Program}: dispositivo não identificado"
+[ -z "$TargetDir" ] && die "${Program}: diretório de destino não fornecido"
+[ ! -b "$Device" ]  && die "${Program}: $Device não é um dispositivo de bloco válido"
+
+# Verifica se o diretório de destino está vazio
+if [[ -d "$TargetDir" && -n "$( ls -1A "$TargetDir" )" ]] ; then
+    read -p "O diretório de destino NÃO está vazio. Isso pode causar problemas. Deseja prosseguir? (yes/NO) " option
+
+    if [ "$option" != "yes" ] ; then
+        die "Cancelando."
+    fi
+fi
+
+sudo mkdir -m 700 -pv "$TargetDir"
+echo
+
+sudo chown -v ${User}:${User} "${TargetDir:-nulldir}"
+echo
+
+command="sudo mount -o $MountOptions $Device $TargetDir"
+
+echo $command
+echo
+
+$command
+
+exit $?

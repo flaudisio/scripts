@@ -1,0 +1,21 @@
+Scripts - TODO
+==============
+
+- Geral
+  . Criar bibliotecas comuns (função die, etc) usando o Bashpool
+  . Padronizar idioma de mensagens
+
+- nginx-sites
+  . Evitar sites repetidos (distinguir HTTP de HTTPS)
+  . Melhorar saída (organização)
+  . Criar mensagem de ajuda
+  . Criar parâmetro -d (diretório de busca customizado)
+
+- remove-old-kernels
+  . Refatorar, traduzir, etc.
+
+- replace-all
+  . Refatorar, traduzir, etc.
+
+- update-pma
+  . Refatorar, traduzir, etc.

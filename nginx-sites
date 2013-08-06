@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# nginx-sites
+# Lista os sites habilitados no nginx
+#
+# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
+# Data      : Fri Mar 15 22:44:20 BRT 2013
+#
+# Licença   : GPLv2
+#
+##
+
+##
+## Configurações
+##
+
+Program="$( basename "$0" )"
+
+DirSitesEnabled="/etc/nginx/sites-enabled"
+
+
+##
+## Main
+##
+
+[ ! -d "$DirSitesEnabled" ] && {
+    echo "${Program}: fatal: diretório '$DirSitesEnabled' não encontrado" >&2
+    exit 1
+}
+
+WebsiteList="$( ls -1 "$DirSitesEnabled"/* 2> /dev/null )"
+
+[ -z "$WebsiteList" ] && {
+    echo "${Program}: fatal: nenhum website habilitado" >&2
+    exit 1
+}
+
+#
+# Show enabled websites
+#
+while read file ; do
+    basename "$file"
+
+    egrep -n '^[[:blank:]]*server_name[[:blank:]]+' "$file" \
+        | sed '
+            s/[\t]/ /g
+            s/\ *server_name\ *//g
+            s/^/  /g
+            s/:/ => /g
+          ' \
+        | tr -d ';'
+
+    echo
+done < <( echo "$WebsiteList" )
+
+exit 0

@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Remove old Ubuntu Kernels
+#
+# Copyright (c) 2013 Flaudísio Tolentino
+#
+##
+
+ProgramName="Remove old Ubuntu Kernels"
+ProgramVersion="0.1.0"
+
+OldKernels="$(
+    dpkg -l |
+    egrep -i 'linux-(image(-extra)?|headers)-[0-9]+' |
+    fgrep -v -- "$( uname -r | egrep -o '\-[0-9]{2}' )" |
+    awk '{ print $2 }'
+)"
+
+echo
+echo "$ProgramName v${ProgramVersion}"
+echo
+
+echo "Current Kernel: $( uname -r )"
+echo
+
+if [ -z "$OldKernels" ] ; then
+    echo "I didn't find any old kernels installed on this system."
+else
+    echo "I found the following old kernels:"
+    echo -e "\n$OldKernels\n"
+
+    read -p "Do you want to REMOVE them? (y/N) " option
+
+    if [ "$option" = "y" -o "$option" = "Y" ] ; then
+        echo -e "\nRunning aptitude purge...\n"
+        sudo aptitude purge $OldKernels -P
+    else
+        echo -e "\nAborting."
+    fi
+fi
+
+
+echo
+
+exit 0

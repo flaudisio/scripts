@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# replace all
+# Replace all occurences of 'pattern' by 'subject' in 'folder'
+#
+
+### Configuration
+
+PROGRAM_NAME="$( basename "$BASH_SOURCE" )"
+
+[ $# -lt 3 ] && {
+    echo "${PROGRAM_NAME}: missing operands."
+    exit 1
+}
+
+### Main
+
+pattern="$1"
+subject="$2"
+folder="$3"
+
+echo -e "\nReplacing '$pattern' with '$subject' in all files inside '$folder', please wait...\n"
+
+fgrep -r "$pattern" "$folder" | cut -d ':' -f 1 | sort | uniq | fgrep -v '.git' |
+    xargs -I '{}' sed -ri 's/'"$pattern"'/'"$subject"'/g' '{}' ||
+        exit 1
+
+echo -e "\nDone.\n"
+
+exit 0
