@@ -5,6 +5,9 @@ Scripts - TODO
   . Criar bibliotecas comuns (função die, etc) usando o Bashpool
   . Padronizar idioma de mensagens
 
+- gen-ssl-cert
+  . Refatorar, traduzir, etc.
+
 - nginx-sites
   . Evitar sites repetidos (distinguir HTTP de HTTPS)
   . Melhorar saída (organização)

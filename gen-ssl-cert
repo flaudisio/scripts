@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# gen-ssl-cert
+# OpenSSL Self-Signed Certificate Generator
+#
+# Author : Flaudísio Tolentino <flaudisio@flaudisio.com>
+# Date   : Tue Aug  6 14:03:02 BRT 2013
+# License: GPLv2
+#
+##
+
+##
+## Settings
+##
+
+VERSION="0.1.4"
+
+CERT_FOLDER="$( dirname "$0" )/out"
+CERT_BASENAME="${CERT_FOLDER}/sample-server"
+CERT_DURATION="730" # days
+
+
+##
+## Functions
+##
+
+die() {
+    echo -e "\n${*}\n"
+    rm -f "${CERT_BASENAME:-nullfile}"* 2> /dev/null
+    exit 1
+}
+
+
+##
+## Main
+##
+
+[ -n "$1" ] && {
+    CERT_BASENAME="${CERT_FOLDER}/$1"
+}
+
+[ ! -d "$CERT_FOLDER" ] && {
+    mkdir -p "$CERT_FOLDER" 2> /dev/null ||
+        die "Could not create base folder: $CERT_FOLDER"
+}
+
+echo
+echo "----------------------------------------------------------"
+echo " OpenSSL Self-Signed Certificate Generator v$VERSION"
+echo "----------------------------------------------------------"
+echo
+
+echo -e "Using basename '$( basename "$CERT_BASENAME" )'\n"
+echo -e "Generating key file...\n"
+
+openssl genrsa -des3 -out "${CERT_BASENAME}.key" 2048 ||
+    die "Error generating key file."
+
+# Run the following command if you like to check the key's details
+# openssl rsa -noout -text -in "${CERT_BASENAME}.key"
+
+echo -e "\nGenerating Certificate Signing Request (CSR)...\n"
+
+openssl req -newkey rsa:2048 -new -key "${CERT_BASENAME}.key" -out "${CERT_BASENAME}.csr" ||
+    die "Error generating CSR."
+
+echo -e "\nRemoving passphrase from key...\n"
+
+cp -v "${CERT_BASENAME}.key" "${CERT_BASENAME}.key.secured"
+
+openssl rsa -in "${CERT_BASENAME}.key.secured" -out "${CERT_BASENAME}.key" ||
+    die "Error trying to remove passphrase."
+
+echo -e "\nGenerating Self-Signed Certificate...\n"
+
+openssl x509 -req -days $CERT_DURATION -in "${CERT_BASENAME}.csr" -signkey "${CERT_BASENAME}.key" -out "${CERT_BASENAME}.crt" ||
+    die "Error generating Self-Signed Certificate."
+
+echo -e "\nDone.\n"
+
+exit 0
