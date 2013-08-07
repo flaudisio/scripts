@@ -3,6 +3,7 @@ Scripts - TODO
 
 - Geral
   - Padronizar idioma de mensagens
+  - Padronizar variável de nome de script (Program, ProgramName...)
 
 - gen-ssl-cert
   - Refatorar, traduzir, etc.
