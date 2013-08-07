@@ -1,4 +1,6 @@
 Scripts
 =======
 
-Scripts diversos e para uso específico. Pouco testados. Use com cuidado.
+Scripts avulsos e com finalidades diversas, eventualmente didáticas.
+
+Testados apenas no Ubuntu. Use com cuidado.

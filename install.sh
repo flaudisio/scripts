@@ -21,16 +21,14 @@ DirTarget="${HOME}/bin"
 ## Entrada
 ##
 
-[ -d "$DirTarget" ] || {
-    echo "Criando diretório de destino: $DirTarget"
+if [ ! -d "$DirTarget" ] ; then
+    echo -e "Criando diretório de destino: $DirTarget\n"
     mkdir -pv "$DirTarget"
     echo
-}
+fi
 
-echo "Criando links simbólicos de $DirSource/ para $DirTarget/..."
-echo
+echo -e "Criando links simbólicos de $DirSource/ para $DirTarget/...\n"
 
 ln -sv "$DirSource"/* "$DirTarget"
 
-echo
-echo "Feito."
+echo -e "\nFeito."
