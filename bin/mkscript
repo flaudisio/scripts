@@ -14,7 +14,7 @@
 ##
 
 ProgramName="$( basename "$0" )"
-ProgramVersion="0.2.0"
+ProgramVersion="0.3.0"
 
 Username=""
 ScriptName=""
@@ -38,8 +38,21 @@ set_username() {
 }
 
 create_script() {
+    local YesNo
+
     if [ -n "$1" ] ; then
         ScriptName="$1"
+
+        # Verifica existência do script
+        if [ -f "$ScriptName" ] ; then
+            read -p "O script '${ScriptName}' já existe. Deseja SOBRESCREVER? (s/N) " YesNo
+
+            if [[ "$YesNo" != "s" && "$YesNo" != "S" ]] ; then
+                echo "Cancelando."
+                exit 1
+            fi
+        fi
+
         true > $ScriptName
     else
         ScriptName="$( mktemp script-XXXX.sh )"
