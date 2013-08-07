@@ -6,8 +6,8 @@ Scripts - TODO
   - Padronizar variável de nome de script (Program, ProgramName...)
 
 - install.sh
-  - Criar opções: `-f` (*ln* forçado), `-v` (verbose), `-i` (instalar em vez de criar links)
-  - Adicionar ~/bin ao .profile ou .bashrc, se necessário
+  - Criar opções: `-f` (`ln` forçado), `-v` (verbose), `-i` (instalar em vez de criar links)
+  - Adicionar `~/bin` ao `PATH`
 
 - esm
   - Criar mais opções (enviar para direita, esquerda, etc)
