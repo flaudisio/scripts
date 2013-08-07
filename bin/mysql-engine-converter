@@ -91,7 +91,8 @@ WHERE
     echo -e "\nAtualizando tabelas $EngineFrom para ${EngineTo}..."
     echo
 
-    echo "$tableList" | \
+    echo "$tableList" \
+    |
     while read table ; do
         echo "Atualizando '${table}'..."
 
