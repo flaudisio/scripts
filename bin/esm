@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# esm (Expand to Second Monitor)
+# Expande a área de trabalho para um segundo monitor (à direita)
+#
+# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
+# Data      : Wed Aug  7 13:35:26 BRT 2013
+# Licença   : GPLv2
+#
+##
+
+if [ -n "$( xrandr | fgrep 'VGA1 connected' )" ] ; then
+    xrandr --output VGA1 --right-of LVDS1
+    ReturnCode=$?
+else
+    echo "VGA1 não encontrado. Abortando." >&2
+    ReturnCode=1
+fi
+
+exit $ReturnCode

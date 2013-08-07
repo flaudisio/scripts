@@ -5,6 +5,9 @@ Scripts - TODO
   - Padronizar idioma de mensagens
   - Padronizar variável de nome de script (Program, ProgramName...)
 
+- esm
+  - Criar mais opções (enviar para direita, esquerda, etc)
+
 - gen-ssl-cert
   - Refatorar, traduzir, etc.
 
