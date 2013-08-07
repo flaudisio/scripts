@@ -10,7 +10,7 @@
 ##
 
 [[ $# < 2 ]] && {
-    echo "uso: $0 <domain> <password>" >&2
+    echo "uso: $( basename "$0" ): <domain> <password>" >&2
     exit 1
 }
 
