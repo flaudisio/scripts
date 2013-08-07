@@ -21,21 +21,20 @@ echo -e "\n$ProgramName v${ProgramVersion}\n"
 echo -e "Current Kernel: $( uname -r )\n"
 
 if [ -z "$OldKernels" ] ; then
-    echo "I didn't find any old kernels installed on this system."
+    echo "I have not fond any additional kernels installed on this system."
 else
-    echo "I found the following old kernels:"
+    echo "I've found the following kernels:"
     echo -e "\n$OldKernels\n"
 
     read -p "Do you want to REMOVE them? (y/N) " option
 
-    if [ "$option" = "y" -o "$option" = "Y" ] ; then
+    if [[ "$option" == "y" || "$option" == "Y" ]] ; then
         echo -e "\nRunning aptitude purge...\n"
         sudo aptitude purge $OldKernels -P
     else
         echo -e "\nAborting."
     fi
 fi
-
 
 echo
 
