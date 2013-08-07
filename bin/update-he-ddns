@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# update-he-ddns
+# Atualizador de DDNS hospedado no Hurricane Electric
+#
+# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com
+# Data      : Sun May 12 05:02:04 BRT 2013
+# Licença   : GPLv2
+#
+##
+
+[[ $# < 2 ]] && {
+    echo "uso: $0 <domain> <password>" >&2
+    exit 1
+}
+
+Domain="$1"
+User="$Domain"
+Pass="$2"
+
+echo -n "[$( date +'%d/%m/%y %H:%M:%S' )] Atualizando... "
+
+curl -4 -sS \
+    "http://${User}:${Pass}@dyn.dns.he.net/nic/update?hostname=$Domain"
+
+echo
+
+exit 0
