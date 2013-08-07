@@ -26,8 +26,7 @@ echo -e "\nReplacing '$pattern' with '$subject' in all files inside '$folder', p
 
 fgrep -r "$pattern" "$folder" \
     | cut -d ':' -f 1 \
-    | sort \
-    | uniq \
+    | sort -u \
     | fgrep -v '.git' \
     | xargs -I '{}' sed -ri 's|'"$pattern"'|'"$subject"'|g' '{}' \
     || exit 1
