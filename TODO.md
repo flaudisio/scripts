@@ -10,6 +10,7 @@ Scripts - TODO
   - Adicionar `~/bin` ao `PATH`
 
 - esm
+  - Tornar checagem inteligente (VGA1 pode existir como único monitor)
   - Criar mais opções (enviar para direita, esquerda, etc)
 
 - gen-ssl-cert
