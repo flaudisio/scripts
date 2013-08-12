@@ -9,7 +9,7 @@
 #
 ##
 
-[[ $# < 2 ]] && {
+[[ $# == 0 ]] && {
     echo "uso: $( basename "$0" ): <domain> <password>" >&2
     exit 1
 }
@@ -17,6 +17,11 @@
 Domain="$1"
 User="$Domain"
 Pass="$2"
+
+[ "$Pass" ] || {
+    read -s -p "Senha: " Pass
+    echo
+}
 
 echo -n "[$( date +'%d/%m/%y %H:%M:%S' )] Atualizando... "
 
