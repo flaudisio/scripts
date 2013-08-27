@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# esm (Expand to Second Monitor)
+# esm
 # Expande a área de trabalho para um segundo monitor (à direita)
 #
 # Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
@@ -8,6 +8,9 @@
 # Licença   : GPLv2
 #
 ##
+
+ProgramName="Expand to Second Monitor"
+ProgramVersion="0.1.2"
 
 if [ -n "$( xrandr | fgrep 'VGA1 connected' )" ] ; then
     xrandr --output VGA1 --right-of LVDS1
