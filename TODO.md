@@ -26,9 +26,6 @@ Scripts - TODO
   - Criar mensagem de ajuda
   - Criar parâmetro -d (diretório de busca customizado)
 
-- remove-old-kernels
-  - Refatorar, traduzir, etc.
-
 - replace-all
   - Refatorar, traduzir, etc.
 
