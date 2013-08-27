@@ -1,13 +1,16 @@
 #!/bin/bash
 #
-# Remove old Ubuntu Kernels
+# ukrt
+# Remove kernels adicionais do Ubuntu
 #
-# Copyright (c) 2013 Flaudísio Tolentino
+# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
+# Data      : Tue Aug 27 14:52:45 BRT 2013
+# Licença   : GPLv2
 #
 ##
 
-ProgramName="Remove old Ubuntu Kernels"
-ProgramVersion="0.1.1"
+ProgramName="Ubuntu Kernel Removal Tool"
+ProgramVersion="0.1.2"
 
 OldKernels="$(
     dpkg -l \
