@@ -21,23 +21,23 @@ OldKernels="$(
 
 echo -e "\n$ProgramName v${ProgramVersion}\n"
 
-echo -e "Current Kernel: $( uname -r )\n"
+echo -e "Kernel atual: $( uname -sr )\n"
 
 if [ -z "$OldKernels" ] ; then
-    echo "I have not fond any additional kernels installed on this system."
+    echo "Não encontrei outras versões do kernel instaladas neste sistema."
 else
-    echo "I've found the following kernels:"
+    echo "As seguintes versões do kernel estão instaladas:"
     echo -e "\n$OldKernels\n"
 
-    read -p "Do you want to REMOVE them? (y/N) " option
+    read -p "Tem certeza de que deseja REMOVÊ-LAS completamente? (s/N) " option
 
     case "${option:-}" in
         [Yy]es|[Yy]|[Ss]im|[Ss]|1|[Tt]rue|[Tt])
-            echo -e "\nRunning aptitude purge...\n"
+            echo -e "\nExecutando 'aptitude purge'...\n"
             sudo aptitude purge $OldKernels -P
         ;;
         *)
-            echo -e "\nAborting."
+            echo -e "\nCancelado."
         ;;
     esac
 fi
