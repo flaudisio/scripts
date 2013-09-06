@@ -9,6 +9,14 @@
 #
 ##
 
+# Processamento de argumentos
+while true ; do
+    case $1 in
+        -c|--cron) Prefix="[$( date +'%d/%m/%y %H:%M:%S' )] " ; shift ;;
+                *) break ;;
+    esac
+done
+
 [[ $# == 0 ]] && {
     echo "uso: $( basename "$0" ): <domain> <password>" >&2
     exit 1
@@ -23,7 +31,7 @@ Pass="$2"
     echo
 }
 
-echo -n "[$( date +'%d/%m/%y %H:%M:%S' )] Atualizando... "
+echo -n "${Prefix}Atualizando... "
 
 curl -4 -sS \
     "http://${User}:${Pass}@dyn.dns.he.net/nic/update?hostname=$Domain"
