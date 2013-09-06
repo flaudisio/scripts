@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# update-he-ddns
+# he-ddns-updater
 # Atualizador de entradas DDNS do Hurricane Electric
 #
 # Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com
@@ -66,7 +66,7 @@ fi
 
 echo -n "${Prefix}Atualizando... "
 
-echo curl -4 -sS \
+curl -4 -sS \
     "http://${User}:${Pass}@dyn.dns.he.net/nic/update?hostname=$Domain"
 
 echo
