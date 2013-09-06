@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # update-he-ddns
-# Atualizador de DDNS hospedado no Hurricane Electric
+# Atualizador de entradas DDNS do Hurricane Electric
 #
 # Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com
 # Data      : Sun May 12 05:02:04 BRT 2013
@@ -9,31 +9,64 @@
 #
 ##
 
+##
+## Configurações
+##
+
+ProgramName="HE's DDNS Updater"
+ProgramVersion="0.1.5"
+
+RcFile="${HOME}/.uhdrc"
+
+Domain=""
+User=""
+Pass=""
+
+
+##
+## Funções
+##
+
+show_usage() {
+    echo "uso: $( basename "$0" ) [-c|--cron] [domínio] [senha]" >&2
+    exit 1
+}
+
+
+##
+## Programa
+##
+
 # Processamento de argumentos
 while true ; do
     case $1 in
         -c|--cron) Prefix="[$( date +'%d/%m/%y %H:%M:%S' )] " ; shift ;;
+        -h|--help) show_usage ;;
+               --) shift ; break ;;
+               -*) echo -e "Opção inválida: $1" ; show_usage ;;
                 *) break ;;
     esac
 done
 
-[[ $# == 0 ]] && {
-    echo "uso: $( basename "$0" ): <domain> <password>" >&2
-    exit 1
+# Verifica arquivo de configuração
+[ -f "$RcFile" ] && { source "$RcFile" || exit 1 ; }
+
+# Sobrescreve configurações com possíveis parâmetros
+[ "$1" ] && {
+    Domain="$1"
+    User="$Domain"
 }
 
-Domain="$1"
-User="$Domain"
-Pass="$2"
+[ "$2" ] && Pass="$2"
 
-[ "$Pass" ] || {
+if [ -z "$Pass" ] ; then
     read -s -p "Senha: " Pass
     echo
-}
+fi
 
 echo -n "${Prefix}Atualizando... "
 
-curl -4 -sS \
+echo curl -4 -sS \
     "http://${User}:${Pass}@dyn.dns.he.net/nic/update?hostname=$Domain"
 
 echo
