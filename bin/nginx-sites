@@ -35,21 +35,24 @@ WebsiteList="$( ls -1 "$DirSitesEnabled"/* 2> /dev/null )"
 }
 
 #
-# Show enabled websites
+# Mostrando sites habilitados
 #
+echo -e "\n-----------------------------------"
+echo    "nginx websites"
+echo    "diretório: $DirSitesEnabled"
+echo -e "-----------------------------------\n"
+
 while read file ; do
     basename "$file"
 
     egrep -n '^[[:blank:]]*server_name[[:blank:]]+' "$file" \
-        | sed '
-            s/[\t]/ /g
-            s/\ *server_name\ *//g
+        | sed -r '
+            s/[[:blank:]]*server_name[[:blank:]]*//g
             s/^/  /g
-            s/:/ => /g
           ' \
         | tr -d ';'
 
     echo
-done < <( echo "$WebsiteList" )
+done < <( echo "$WebsiteList" ) | column -e -t -s ':'
 
 exit 0
