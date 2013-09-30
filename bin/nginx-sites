@@ -37,10 +37,10 @@ WebsiteList="$( ls -1 "$DirSitesEnabled"/* 2> /dev/null )"
 #
 # Mostrando sites habilitados
 #
-echo -e "\n-----------------------------------"
-echo    "nginx websites"
-echo    "diretório: $DirSitesEnabled"
-echo -e "-----------------------------------\n"
+echo "-----------------------------------"
+echo "nginx websites"
+echo "diretório: $DirSitesEnabled"
+echo "-----------------------------------"
 
 while read file ; do
     basename "$file"
@@ -51,8 +51,10 @@ while read file ; do
             s/^/  /g
           ' \
         | tr -d ';'
+done < <( echo "$WebsiteList" ) \
+    | column -t -s ':' \
+    | sed -r 's/^([[:alnum:]])/\n\1/'
 
-    echo
-done < <( echo "$WebsiteList" ) | column -e -t -s ':'
+echo
 
 exit 0
