@@ -28,7 +28,7 @@ Pass=""
 ##
 
 show_usage() {
-    echo "uso: $( basename "$0" ) [-c|--cron] [domínio] [senha]" >&2
+    echo "uso: $( basename "$0" ) [-c|--cron] [domínio] [senha]"
     exit 0
 }
 
@@ -36,6 +36,12 @@ show_usage() {
 ##
 ## Programa
 ##
+
+# Sanidade
+if ! command -v curl > /dev/null ; then
+    echo "fatal: cURL não encontrado. Instale-o via 'aptitude install curl'." >&2
+    exit 1
+fi
 
 # Processamento de argumentos
 while true ; do
