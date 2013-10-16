@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # he-ddns-updater
-# Atualizador de entradas DDNS do Hurricane Electric
+# Atualizador de entradas DDNS do Hurricane Electric.
 #
 # Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com
 # Data      : Sun May 12 05:02:04 BRT 2013

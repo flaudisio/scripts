@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # nginx-sites
-# Lista os sites habilitados no nginx
+# Lista os sites habilitados no nginx.
 #
 # Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
 # Data      : Fri Mar 15 22:44:20 BRT 2013

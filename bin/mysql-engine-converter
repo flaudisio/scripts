@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # mysql-engine-converter
-# Converte Engine de tabelas do MySQL
+# Conversor de Engines de tabelas do MySQL.
 #
 # Autor     : Flaudisio Tolentino <flaudisio@flaudisio.com>
 # Data      : Wed Jul 17 18:27:32 BRT 2013
@@ -113,10 +113,10 @@ while [[ $# > 0 ]] ; do
     case $1 in
         --engine-from) [ $2 ] && EngineFrom="$2" && shift || throw_arg_error $1 ;;
         --engine-to  ) [ $2 ] && EngineTo="$2"   && shift || throw_arg_error $1 ;;
-        -h|--host    ) [ $2 ] && MysqlHost="$2" && shift || throw_arg_error $1 ;;
-        -d|--database) [ $2 ] && MysqlBase="$2" && shift || throw_arg_error $1 ;;
-        -u|--user    ) [ $2 ] && MysqlUser="$2" && shift || throw_arg_error $1 ;;
-        -p|--password) [ $2 ] && MysqlPass="$2" && shift || throw_arg_error $1 ;;
+        -h|--host    ) [ $2 ] && MysqlHost="$2"  && shift || throw_arg_error $1 ;;
+        -d|--database) [ $2 ] && MysqlBase="$2"  && shift || throw_arg_error $1 ;;
+        -u|--user    ) [ $2 ] && MysqlUser="$2"  && shift || throw_arg_error $1 ;;
+        -p|--password) [ $2 ] && MysqlPass="$2"  && shift || throw_arg_error $1 ;;
 
         *)
             die "fatal: parâmetro desconhecido: $1"
