@@ -16,7 +16,7 @@
 ProgramName="HE's DDNS Updater"
 ProgramVersion="0.1.5"
 
-RcFile="${HOME}/.uhdrc"
+RcFile="${HOME}/.hdurc"
 
 Domain=""
 User=""
@@ -73,7 +73,7 @@ if [ -z "$Pass" ] ; then
     echo
 fi
 
-echo -n "${Prefix}Atualizando... "
+echo -n "${Prefix}[$Domain] Atualizando... "
 
 curl -4 -sS \
     "http://${User}:${Pass}@dyn.dns.he.net/nic/update?hostname=$Domain"
