@@ -1,0 +1,94 @@
+#!/bin/bash
+#
+# ets2-backup
+# Cria um backup do Euro Truck Simulator 2
+#
+# Autor     : Flaudísio Tolentino <flaudisio@gmail.com>
+# Data      : Thu Aug  7 09:31:50 BRT 2014
+# Licença   : Nenhuma.
+#
+##
+
+# HOME e DIR: separados para evitar a mensagem de alerta do 'tar'
+ETS_HOME="$HOME/.local/share"
+ETS_DIR="Euro Truck Simulator 2"
+ETS_PATH="$ETS_HOME/$ETS_DIR"
+
+# Opções de backup
+BACKUP_DIR="$HOME/Dropbox/Jogos/Backups"
+BACKUP_FILE="$BACKUP_DIR/ets2_$( date +'%Y%m%d-%H%M%S' ).tar.gz"
+
+REPLACE_LAST=0
+
+
+die()
+{
+    [[ "$1" ]] && echo -e "$*" >&2
+    exit 1
+}
+
+create_archive()
+{
+    local backupFile="$BACKUP_FILE"
+    local targetHome="$1"
+    local targetDir="$2"
+
+    [[ -n "$3" ]] && backupFile="$3"
+
+    # Opção -C evita a mensagem "tar: Removing leading `/' from member names",
+    # visto que o tar sempre espera caminhos relativos, a não ser que a opção -P
+    # seja definida (não recomendado!) - http://unix.stackexchange.com/q/59243
+    if tar czf "$backupFile" -C "$targetHome" "$targetDir" ; then
+        echo "$backupFile"
+    else
+        echo "Erro ao comprimir arquivo." >&2
+        return 1
+    fi
+}
+
+create_backup()
+{
+    local backupFile
+
+    echo "--> Criando backup..."
+
+    backupFile="$( create_archive "$ETS_HOME" "$ETS_DIR" )"
+
+    if [[ -f "$backupFile" ]] ; then
+        if [[ "$REPLACE_LAST" -eq 1 && -n "$LAST_BACKUP" ]] ; then
+            echo "--> Removendo último backup..."
+            rm -f "$LAST_BACKUP"
+        fi
+
+        echo "--> Backup criado com sucesso!"
+        echo "    Arquivo: $backupFile"
+        echo "    Tamanho: $( du -h "$backupFile" | awk '{ print $1 }' )"
+    else
+        die "Erro ao criar backup."
+    fi
+}
+
+
+[[ ! -d "$ETS_PATH" ]] &&
+    die "Erro: diretório do ETS 2 não existe ($ETS_PATH)."
+
+[[ ! -d "$BACKUP_DIR" ]] &&
+    die "Erro: diretório de backup não existe ($BACKUP_DIR)."
+
+case $1 in
+    -r|--replace-last)
+        REPLACE_LAST=1
+    ;;
+    -*)
+        die "Erro: parâmetro desconhecido: $1"
+    ;;
+esac
+
+LAST_BACKUP="$( ls -1 "$BACKUP_DIR/"ets2_* | tail -n 1 )"
+
+[[ -n "$LAST_BACKUP" ]] &&
+    echo "--> Último backup: $( basename "$LAST_BACKUP" )"
+
+create_backup
+
+exit $?
