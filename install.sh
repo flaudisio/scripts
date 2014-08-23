@@ -16,6 +16,8 @@
 DirSource="$( readlink -f "$( dirname "$0" )/bin" )"
 DirTarget="${HOME}/bin"
 
+LnOpts="$@"
+
 
 ##
 ## Entrada
@@ -29,6 +31,6 @@ fi
 
 echo -e "Criando links simbólicos de $DirSource/ para $DirTarget/...\n"
 
-ln -sv "$DirSource"/* "$DirTarget"
+ln -sv "$LnOpts" "$DirSource"/* "$DirTarget"
 
 echo -e "\nFeito."
