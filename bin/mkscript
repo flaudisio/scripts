@@ -113,12 +113,15 @@ set_username
 
 create_script "$1"
 
-chmod -v 755 $ScriptName || exit 1
+cmd="chmod 755 $ScriptName"
+
+echo "$cmd"
+$cmd || exit 1
 
 add_script_data
 
-echo "Abrindo nano..."
+echo "Abrindo editor..."
 
-nano +10,1 $ScriptName
+editor +10 $ScriptName
 
 exit 0
