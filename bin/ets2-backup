@@ -27,6 +27,17 @@ die()
     exit 1
 }
 
+usage()
+{
+    cat << EOF
+Uso: $( basename "$0" ) [-r] [-h]
+
+Opções:
+    -r, --replace-last  Remove o último backup.
+    -h, --help          Esta mensagem.
+EOF
+}
+
 create_archive()
 {
     local backupFile="$BACKUP_FILE"
@@ -75,14 +86,22 @@ create_backup()
 [[ ! -d "$BACKUP_DIR" ]] &&
     die "Erro: diretório de backup não existe ($BACKUP_DIR)."
 
-case $1 in
-    -r|--replace-last)
-        REPLACE_LAST=1
-    ;;
-    -*)
-        die "Erro: parâmetro desconhecido: $1"
-    ;;
-esac
+
+while [[ $# -gt 0 ]] ; do
+    case $1 in
+        -r|--replace-last)
+            REPLACE_LAST=1
+        ;;
+        -h|--help)
+            usage ; exit 0
+        ;;
+        *)
+            echo -e "Opção desconhecida: $1\n\n$( usage )" >&2
+            exit 2
+        ;;
+    esac
+    shift
+done
 
 LAST_BACKUP="$( ls -1 "$BACKUP_DIR/"ets2_* | tail -n 1 )"
 
