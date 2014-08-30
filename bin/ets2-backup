@@ -14,12 +14,11 @@ ETS_HOME="$HOME/.local/share"
 ETS_DIR="Euro Truck Simulator 2"
 ETS_PATH="$ETS_HOME/$ETS_DIR"
 
-# Opções de backup
-BACKUP_DIR="$HOME/Dropbox/Jogos/Backups"
-BACKUP_FILE="$BACKUP_DIR/ets2_$( date +'%Y%m%d-%H%M%S' ).tar.gz"
+# Opções padrões de diretório e arquivo de backup
+BACKUP_PREFIX="ets2_"
 BACKUP_SUFFIX=""
-
-# Controle de versões
+BACKUP_DIR="$HOME/Dropbox/Jogos/Backups/ETS2"
+BACKUP_FILE="$BACKUP_DIR/${BACKUP_PREFIX}$( date +'%Y%m%d-%H%M%S' ).tar.gz"
 LAST_BACKUP=""
 REPLACE_LAST=0
 
@@ -99,7 +98,7 @@ list_backups()
 {
     local backups
 
-    backups="$( du -hc "$BACKUP_DIR"/ets2_*.tar.gz 2> /dev/null )"
+    backups="$( du -hc "$BACKUP_DIR/$BACKUP_PREFIX"*.tar.gz 2> /dev/null )"
 
     if [[ -z "$backups" || "$backups" =~ ^0.*total$ ]] ; then
         echo "Nenhum backup encontrado."
@@ -109,6 +108,15 @@ list_backups()
     echo "--> Backups encontrados:"
     echo "$backups"
     echo "--> Fim da lista."
+}
+
+setup_params()
+{
+    # Caminho completo do arquivo de backup
+    BACKUP_FILE="$BACKUP_DIR/${BACKUP_PREFIX}$( date +'%Y%m%d-%H%M%S' ).tar.gz"
+
+    # Último backup
+    LAST_BACKUP="$( ls -1 "$BACKUP_DIR/$BACKUP_PREFIX"* 2> /dev/null | tail -n 1 )"
 }
 
 
