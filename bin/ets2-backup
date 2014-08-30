@@ -96,8 +96,7 @@ create_backup()
         echo "    Tamanho: $( du -h "$backupFile" | awk '{ print $1 }' )"
 
         if [[ "$REPLACE_LAST" -eq 1 && -n "$LAST_BACKUP" ]] ; then
-            rm -f "$LAST_BACKUP" || return
-            echo "--> Último backup substituído."
+            rm -f "$LAST_BACKUP" && echo "--> Último backup substituído."
         fi
     else
         die "Erro ao criar backup."
