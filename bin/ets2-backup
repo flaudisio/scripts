@@ -24,25 +24,30 @@ LAST_BACKUP=""
 REPLACE_LAST=0
 
 
-die()
-{
-    [[ "$1" ]] && echo -e "$*" >&2
-    exit 1
-}
-
 usage()
 {
     cat << EOF
-Uso: $( basename "$0" ) [-r] [-h]
+Uso: $( basename "$0" ) [-r] [-h] [descrição do backup]
+
+Cria um backup do Euro Truck Simulator 2, adicionando uma descrição
+ao nome do arquivo (opcional).
 
 Opções:
-    -r, --replace-last  Remove o último backup.
+    -l, --list          Lista os backups existentes.
+    -r, --replace-last  Faz um novo backup, substituindo o anterior.
+    -u, --update        O mesmo que -r.
     -h, --help          Esta mensagem.
 
 Exemplos de backup:
     \$BACKUP_DIR/$( basename "$BACKUP_FILE" )
     \$BACKUP_DIR/$( basename "${BACKUP_FILE/.tar.gz/_descrição.tar.gz}" )
 EOF
+}
+
+die()
+{
+    [[ "$1" ]] && echo -e "$*" >&2
+    exit 1
 }
 
 create_archive()
@@ -90,6 +95,22 @@ create_backup()
     fi
 }
 
+list_backups()
+{
+    local backups
+
+    backups="$( du -hc "$BACKUP_DIR"/ets2_*.tar.gz 2> /dev/null )"
+
+    if [[ -z "$backups" || "$backups" =~ ^0.*total$ ]] ; then
+        echo "Nenhum backup encontrado."
+        return 1
+    fi
+
+    echo "--> Backups encontrados:"
+    echo "$backups"
+    echo "--> Fim da lista."
+}
+
 
 [[ ! -d "$ETS_PATH" ]] &&
     die "Erro: diretório do ETS 2 não existe ($ETS_PATH)."
@@ -100,14 +121,18 @@ create_backup()
 
 while [[ $# -gt 0 ]] ; do
     case $1 in
-        -r|--replace-last)
+        -l|--list)
+            list_backups ; exit $?
+        ;;
+        -r|--replace-last|-u|--update)
             REPLACE_LAST=1
+            shift
         ;;
         -h|--help)
             usage ; exit 0
         ;;
-        *)
-            echo -e "Opção desconhecida: $1\n\n$( usage )" >&2
+        -*)
+            echo -e "Opção desconhecida: $1\n\n$( usage | head -n 1 )" >&2
             exit 2
         ;;
         *)
@@ -115,7 +140,6 @@ while [[ $# -gt 0 ]] ; do
             break
         ;;
     esac
-    shift
 done
 
 LAST_BACKUP="$( ls -1 "$BACKUP_DIR/"ets2_* | tail -n 1 )"
