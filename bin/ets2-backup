@@ -17,6 +17,7 @@ ETS_PATH="$ETS_HOME/$ETS_DIR"
 # Opções de backup
 BACKUP_DIR="$HOME/Dropbox/Jogos/Backups"
 BACKUP_FILE="$BACKUP_DIR/ets2_$( date +'%Y%m%d-%H%M%S' ).tar.gz"
+BACKUP_SUFFIX=""
 
 REPLACE_LAST=0
 
@@ -35,6 +36,10 @@ Uso: $( basename "$0" ) [-r] [-h]
 Opções:
     -r, --replace-last  Remove o último backup.
     -h, --help          Esta mensagem.
+
+Exemplos de backup:
+    \$BACKUP_DIR/$( basename "$BACKUP_FILE" )
+    \$BACKUP_DIR/$( basename "${BACKUP_FILE/.tar.gz/_descrição.tar.gz}" )
 EOF
 }
 
@@ -45,6 +50,10 @@ create_archive()
     local targetDir="$2"
 
     [[ -n "$3" ]] && backupFile="$3"
+
+    # Adiciona o sufixo, se existente
+    [[ -n "$BACKUP_SUFFIX" ]] &&
+        backupFile="${backupFile/.tar.gz/${BACKUP_SUFFIX}.tar.gz}"
 
     # Opção -C evita a mensagem "tar: Removing leading `/' from member names",
     # visto que o tar sempre espera caminhos relativos, a não ser que a opção -P
@@ -98,6 +107,10 @@ while [[ $# -gt 0 ]] ; do
         *)
             echo -e "Opção desconhecida: $1\n\n$( usage )" >&2
             exit 2
+        ;;
+        *)
+            BACKUP_SUFFIX="_$*"
+            break
         ;;
     esac
     shift
