@@ -20,18 +20,22 @@ BACKUP_SUFFIX=""
 BACKUP_DIR="$HOME/Dropbox/Jogos/Backups/ETS2"
 BACKUP_FILE="$BACKUP_DIR/${BACKUP_PREFIX}$( date +'%Y%m%d-%H%M%S' ).tar.gz"
 LAST_BACKUP=""
+
+# Ações do programa
+LIST_BACKUPS=0
 REPLACE_LAST=0
 
 
 usage()
 {
     cat << EOF
-Uso: $( basename "$0" ) [-r] [-h] [descrição do backup]
+Uso: $( basename "$0" ) [opções] [descrição do backup]
 
 Cria um backup do Euro Truck Simulator 2, adicionando uma descrição
 ao nome do arquivo (opcional).
 
 Opções:
+    -d, --backup-dir    Diretório onde os backups serão salvos.
     -l, --list          Lista os backups existentes.
     -r, --replace-last  Faz um novo backup, substituindo o anterior.
     -u, --update        O mesmo que -r.
@@ -75,6 +79,12 @@ create_archive()
 create_backup()
 {
     local backupFile
+
+    # Verifica diretório de destino
+    if [[ ! -d "$BACKUP_DIR" ]] ; then
+        mkdir -p "$BACKUP_DIR" ||
+            die "Erro ao criar diretório de backup."
+    fi
 
     echo "--> Criando backup..."
 
@@ -123,14 +133,17 @@ setup_params()
 [[ ! -d "$ETS_PATH" ]] &&
     die "Erro: diretório do ETS 2 não existe ($ETS_PATH)."
 
-[[ ! -d "$BACKUP_DIR" ]] &&
-    die "Erro: diretório de backup não existe ($BACKUP_DIR)."
-
 
 while [[ $# -gt 0 ]] ; do
     case $1 in
+        -d|--backup-dir)
+            [[ -z "$2" ]] && die "Erro: nenhum diretório de backup selecionado."
+            BACKUP_DIR="$2"
+            shift 2
+        ;;
         -l|--list)
-            list_backups ; exit $?
+            LIST_BACKUPS=1
+            shift
         ;;
         -r|--replace-last|-u|--update)
             REPLACE_LAST=1
@@ -150,11 +163,19 @@ while [[ $# -gt 0 ]] ; do
     esac
 done
 
-LAST_BACKUP="$( ls -1 "$BACKUP_DIR/"ets2_* | tail -n 1 )"
+# Lista backups
+if [[ $LIST_BACKUPS -eq 1 ]] ; then
+    list_backups
+    exit $?
+fi
+
+# Define variáveis, etc.
+setup_params
 
 [[ -n "$LAST_BACKUP" ]] &&
     echo "--> Último backup: $( basename "$LAST_BACKUP" )"
 
+# Executa o backup
 create_backup
 
 exit $?
