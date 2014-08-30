@@ -19,6 +19,8 @@ BACKUP_DIR="$HOME/Dropbox/Jogos/Backups"
 BACKUP_FILE="$BACKUP_DIR/ets2_$( date +'%Y%m%d-%H%M%S' ).tar.gz"
 BACKUP_SUFFIX=""
 
+# Controle de versões
+LAST_BACKUP=""
 REPLACE_LAST=0
 
 
@@ -75,14 +77,14 @@ create_backup()
     backupFile="$( create_archive "$ETS_HOME" "$ETS_DIR" )"
 
     if [[ -f "$backupFile" ]] ; then
-        if [[ "$REPLACE_LAST" -eq 1 && -n "$LAST_BACKUP" ]] ; then
-            echo "--> Removendo último backup..."
-            rm -f "$LAST_BACKUP"
-        fi
-
         echo "--> Backup criado com sucesso!"
         echo "    Arquivo: $backupFile"
         echo "    Tamanho: $( du -h "$backupFile" | awk '{ print $1 }' )"
+
+        if [[ "$REPLACE_LAST" -eq 1 && -n "$LAST_BACKUP" ]] ; then
+            rm -f "$LAST_BACKUP" || return
+            echo "--> Último backup substituído."
+        fi
     else
         die "Erro ao criar backup."
     fi
