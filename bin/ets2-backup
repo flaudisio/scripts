@@ -31,8 +31,7 @@ usage()
     cat << EOF
 Uso: $( basename "$0" ) [opções] [descrição do backup]
 
-Cria um backup do Euro Truck Simulator 2, adicionando uma descrição
-ao nome do arquivo (opcional).
+Cria um backup do Euro Truck Simulator 2.
 
 Opções:
     -d, --backup-dir    Diretório onde os backups serão salvos.
