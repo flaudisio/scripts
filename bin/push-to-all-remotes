@@ -48,7 +48,15 @@ git remote -v \
     done
 
 echo
-echo 'Feito. Que bom!'
+echo '  _______________________________________'
+echo ' / Feito! E agora, que tal uma xícara de \'
+echo ' \ café? ;D                              /'
+echo '  ---------------------------------------'
+echo '         \   ^__^'
+echo '          \  (^^)\_______'
+echo '             (__)\       )\/\'
+echo '                 ||----w |'
+echo '                 ||     ||'
 echo "-------------------------------------------------"
 
 
