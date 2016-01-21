@@ -17,7 +17,7 @@ VERSION="0.1.4"
 
 CERT_FOLDER="$( dirname "$0" )/out"
 CERT_BASENAME="${CERT_FOLDER}/sample-server"
-CERT_DURATION="730" # days
+CERT_DURATION="1825" # days
 
 
 ##
