@@ -39,7 +39,7 @@ start_spotify()
 }
 
 if [[ -z "$1" ]] ; then
-    show_error "Uso: $( basename "$0" ) {PlayPause|Previous|Next|Stop}"
+    show_error "Uso: $( basename "$0" ) {Start|PlayPause|Previous|Next|Stop}"
     exit 2
 fi
 
