@@ -3,7 +3,7 @@
 # spotify-ctl.sh
 # Permite controle básico (abrir, play/pause, etc) do Spotify.
 #
-# Uso: ./spotify-ctl.sh
+# Uso: ./spotify-ctl.sh Start|PlayPause|Previous|Next|Stop
 #
 # Pré-requisitos: sudo apt-get install dbus wmctrl zenity
 #
