@@ -1,0 +1,23 @@
+[tools]
+"pipx:bump-my-version" = "1"
+shellcheck = "0.11"
+
+[tasks.pre-commit]
+description = "Run pre-commit"
+run = "pre-commit run --all-files --color always"
+
+[tasks."bump-version:major"]
+description = "Increment the major version (X.y.z)"
+run = "bump-my-version bump major"
+
+[tasks."bump-version:minor"]
+description = "Increment the minor version (x.Y.z)"
+run = "bump-my-version bump minor"
+
+[tasks."bump-version:patch"]
+description = "Increment the patch version (x.y.Z)"
+run = "bump-my-version bump patch"
+
+[tasks.git-push]
+description = "Push the current branch and related tags"
+run = "git push --follow-tags origin HEAD"

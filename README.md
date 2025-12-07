@@ -1,6 +1,7 @@
-Scripts
-=======
+# Scripts
 
-Scripts avulsos e com finalidades diversas, eventualmente didáticas.
+Helper scripts for miscellaneous purposes.
 
-Testados apenas no Ubuntu. Use com cuidado.
+## License
+
+[MIT](LICENSE).
