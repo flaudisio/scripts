@@ -1,36 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # install.sh
-# Instala os scripts no diretório ~/bin
-#
-# Autor     : Flaudísio Tolentino <flaudisio@flaudisio.com>
-# Data      : Wed Aug  7 13:40:14 BRT 2013
-# Licença   : GPLv2
 #
 ##
 
-##
-## Configurações
-##
+set -o pipefail
 
-DirSource="$( readlink -f "$( dirname "$0" )/bin" )"
-DirTarget="${HOME}/bin"
+SOURCE_DIR="$( readlink -f "$( dirname "$0" )/bin" )"
+TARGET_DIR="${HOME}/.local/bin"
 
-LnOpts="$@"
+LN_OPTS=( "$@" )
 
-
-##
-## Entrada
-##
-
-if [ ! -d "$DirTarget" ] ; then
-    echo -e "Criando diretório de destino: $DirTarget\n"
-    mkdir -pv "$DirTarget"
-    echo
+if [[ ! -d "$TARGET_DIR" ]] ; then
+    echo "--> Creating target directory '$TARGET_DIR'"
+    mkdir -pv "$TARGET_DIR"
 fi
 
-echo -e "Criando links simbólicos de $DirSource/ para $DirTarget/...\n"
+echo "--> Creating symbolic links from '$SOURCE_DIR' to '$TARGET_DIR'"
 
-ln -sv "$LnOpts" "$DirSource"/* "$DirTarget"
+ln -s -v "${LN_OPTS[@]}" "$SOURCE_DIR"/* "$TARGET_DIR"
 
-echo -e "\nFeito."
+echo "--> Done"
