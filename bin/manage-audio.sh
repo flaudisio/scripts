@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-readonly ScriptName="manage-audio"
+readonly SCRIPT_NAME="manage-audio"
 
 : "${DISABLED:=""}"
 
@@ -14,19 +14,19 @@ readonly ScriptName="manage-audio"
 
 function _msg()
 {
-    echo -e "$*" >&2
+    echo "$*" >&2
 }
 
 function show_info()
 {
     _msg "$*"
-    notify-send --icon info --expire-time 2000 "$ScriptName" "$*"
+    notify-send --icon info --expire-time 2000 "$SCRIPT_NAME" "$*"
 }
 
 function show_error()
 {
     _msg "$*"
-    notify-send --icon error --expire-time 2000 "$ScriptName" "$*"
+    notify-send --icon error --expire-time 2000 "$SCRIPT_NAME" "$*"
 }
 
 function get_pulse_audio_resource()
