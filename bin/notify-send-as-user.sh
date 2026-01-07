@@ -7,6 +7,11 @@ set -eo pipefail
 
 function main()
 {
+    if [[ $( id -u ) -ne 0 ]] ; then
+        notify-send "$@"
+        exit
+    fi
+
     # List displays in use
     local -r socket_files=( /tmp/.X11-unix/X* )
 
