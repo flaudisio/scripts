@@ -17,13 +17,13 @@ function _msg()
     echo "$*" >&2
 }
 
-function show_info()
+function _info()
 {
     _msg "$*"
     notify-send --icon info --expire-time 2000 "$SCRIPT_NAME" "$*"
 }
 
-function show_error()
+function _error()
 {
     _msg "$*"
     notify-send --icon error --expire-time 2000 "$SCRIPT_NAME" "$*"
@@ -79,7 +79,7 @@ function set_source_port()
 function main()
 {
     if [[ -n "$DISABLED" ]] ; then
-        show_info "Script is disabled, ignoring."
+        _info "Script is disabled, ignoring."
         exit 0
     fi
 
@@ -99,32 +99,32 @@ function main()
         ;;
         use-headset)
             if ! set_source_port "$source_description" "$HEADSET_SOURCE_PORT" "$MIC_VOLUME" ; then
-                show_error "Error selecting headset mic. Run script in console for details."
+                _error "Error selecting headset mic. Run script in console for details."
                 exit 1
             fi
 
             if ! set_sink_port "$sink_description" "$HEADSET_SINK_PORT" ; then
-                show_error "Error selecting headphones. Run script in console for details."
+                _error "Error selecting headphones. Run script in console for details."
                 exit 1
             fi
 
-            show_info "Using headset"
+            # _info "Using headset"
         ;;
         use-speakers)
             if ! set_sink_port "$sink_description" "[Out] Speaker" ; then
-                show_error "Error selecting speakers. Run script in console for details."
+                _error "Error selecting speakers. Run script in console for details."
                 exit 1
             fi
 
-            show_info "Using speakers"
+            # _info "Using speakers"
         ;;
         use-internal-mic)
             if ! set_source_port "$source_description" "[In] Mic2" ; then
-                show_error "Error selecting internal mic. Run script in console for details."
+                _error "Error selecting internal mic. Run script in console for details."
                 exit 1
             fi
 
-            show_info "Using internal mic"
+            # _info "Using internal mic"
         ;;
         *)
             echo "Usage: $0 <ls-ports|use-headset|use-speakers|use-internal-mic>" >&2
