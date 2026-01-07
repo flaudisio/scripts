@@ -20,13 +20,13 @@ function _msg()
 function _info()
 {
     _msg "$*"
-    notify-send --icon info --expire-time 2000 "$SCRIPT_NAME" "$*"
+    notify-send --icon dialog-information --expire-time 2000 "$SCRIPT_NAME" "$*"
 }
 
 function _error()
 {
     _msg "$*"
-    notify-send --icon error --expire-time 2000 "$SCRIPT_NAME" "$*"
+    notify-send --icon dialog-error --expire-time 2000 "$SCRIPT_NAME" "$*"
 }
 
 function get_pulse_audio_resource()
