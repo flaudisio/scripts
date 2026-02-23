@@ -42,7 +42,7 @@ function process_snapshots()
     _msg "Searching for snapshots containing paths ${paths_to_remove[*]}"
 
     mapfile -t snapshot_ids < <(
-        _run "${RP_CMD[@]}" --quiet find --json "${paths_to_remove[@]}" | jq -r '.[].snapshot'
+        _run "${RP_CMD[@]}" --quiet find --reverse --json "${paths_to_remove[@]}" | jq -r '.[].snapshot'
     )
 
     if [[ -z "${snapshot_ids[0]}" ]] ; then
