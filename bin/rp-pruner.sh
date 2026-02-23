@@ -34,7 +34,7 @@ function _confirm()
     [[ "$option" =~ ^[yY]$ ]]
 }
 
-function rewrite_snapshots()
+function process_snapshots()
 {
     local paths_to_remove=( "$@" )
     local snapshot_ids=()
@@ -54,31 +54,31 @@ function rewrite_snapshots()
 
     echo "${snapshot_ids[@]}" | tr ' ' '\n' >&2
 
-    _confirm "Rewrite snapshots?" || return 0
+    if _confirm "Rewrite snapshots?" ; then
+        local exclude_args=()
+        local path
 
-    local exclude_args=()
-    local path
+        for path in "${paths_to_remove[@]}" ; do
+            exclude_args+=( --exclude "$path" )
+        done
 
-    for path in "${paths_to_remove[@]}" ; do
-        exclude_args+=( --exclude "$path" )
-    done
+        _msg "Rewriting snapshots"
 
-    _msg "Rewriting snapshots"
+        _run "${RP_CMD[@]}" rewrite "${exclude_args[@]}" "${snapshot_ids[@]}"
+    fi
 
-    _run "${RP_CMD[@]}" rewrite "${exclude_args[@]}" "${snapshot_ids[@]}"
+    if _confirm "Forget snapshots?" ; then
+        _msg "Forgetting snapshots"
 
-    _confirm "Forget snapshots?" || return 0
-
-    _msg "Forgetting snapshots"
-
-    _run "${RP_CMD[@]}" forget "${snapshot_ids[@]}"
+        _run "${RP_CMD[@]}" forget "${snapshot_ids[@]}"
+    fi
 }
 
-function cleanup_snapshots()
+function remove_rewrite_tag()
 {
-    _confirm "Remove tag 'rewrite' from snapshots?" || return 0
+    _confirm "Remove 'rewrite' tag from snapshots?" || return 0
 
-    _msg "Removing tag 'rewrite' from snapshots"
+    _msg "Removing tag"
 
     _run "${RP_CMD[@]}" tag --tag rewrite --remove rewrite
 }
@@ -96,8 +96,8 @@ function main()
 
     _msg "Starting at $( date )"
 
-    rewrite_snapshots "${paths_to_remove[@]}"
-    cleanup_snapshots
+    process_snapshots "${paths_to_remove[@]}"
+    remove_rewrite_tag
 
     _msg "Done!"
 }
