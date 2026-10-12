@@ -2,22 +2,35 @@
 #
 # install.sh
 #
+# Symlink every script from bin/ into ~/.local/bin.
+#
 ##
 
 set -o pipefail
+set -u
 
-SOURCE_DIR="$( readlink -f "$( dirname "$0" )/bin" )"
-TARGET_DIR="${HOME}/.local/bin"
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" && pwd -P )"
 
-LN_OPTS=( "$@" )
+readonly SCRIPT_DIR
+readonly SOURCE_DIR="${SCRIPT_DIR}/bin"
+readonly TARGET_DIR="${HOME}/.local/bin"
 
-if [[ ! -d "$TARGET_DIR" ]] ; then
-    echo "--> Creating target directory '$TARGET_DIR'"
-    mkdir -pv "$TARGET_DIR"
-fi
+function _msg()
+{
+    echo "$*" >&2
+}
 
-echo "--> Creating symbolic links from '$SOURCE_DIR' to '$TARGET_DIR'"
+function main()
+{
+    if [[ ! -d "$TARGET_DIR" ]] ; then
+        _msg "--> Creating target directory '$TARGET_DIR'"
 
-ln -s -v "${LN_OPTS[@]}" "$SOURCE_DIR"/* "$TARGET_DIR"
+        mkdir --parents --verbose "$TARGET_DIR" || return
+    fi
 
-echo "--> Done"
+    _msg "--> Creating symbolic links from '$SOURCE_DIR' to '$TARGET_DIR'"
+
+    ln --symbolic --verbose "$@" -- "$SOURCE_DIR"/* "$TARGET_DIR"
+}
+
+main "$@"
