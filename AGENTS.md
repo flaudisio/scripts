@@ -1,14 +1,15 @@
 # AGENTS.md
 
 Personal collection of standalone Bash helper scripts. `install.sh` symlinks every `bin/*`
-script into `~/.local/bin`. There is no shared library, build step, or test suite.
+script into `~/.local/bin`. There is no shared library or build step; scripts are covered by
+a bats suite under `tests/`.
 
 ## Commands
 
-- `mise run lint` — the only automated check. Runs `prek run --all-files` against
-  `.pre-commit-config.yaml` (shellcheck, yamllint, whitespace/EOF fixers). Some hooks rewrite
-  files in place, so re-run it after editing.
-- `mise install` — installs the pinned tools (`prek`, `shellcheck`, `bump-my-version`).
+- `mise run lint` — runs `prek run --all-files` against `.pre-commit-config.yaml` (shellcheck,
+  yamllint, whitespace/EOF fixers). Some hooks rewrite files in place, so re-run it after editing.
+- `mise run test` — runs the `tests/*.bats` suite with bats.
+- `mise install` — installs the pinned tools (`prek`, `shellcheck`, `bump-my-version`, `bats`).
 - To verify a script, run it directly and pass `mise run lint`. Many scripts need root or real
   hardware (PulseAudio, X11, LUKS, restic) and cannot be exercised in CI.
 
