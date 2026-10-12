@@ -23,7 +23,8 @@ Usage:
   ftenv run --help
 
 Load secrets from files or directories, then run COMMAND with them exported.
-PATH may be a secret file, or a directory whose files are all loaded.
+A PATH directory contributes its *.env files. Only lines beginning with
+`export ` are loaded from each file.
 
 Options:
   -l, --load PATH   Load PATH. May be repeated; later sources override earlier.
@@ -52,10 +53,11 @@ function _source_file()
     [[ "$-" == *u* ]] && had_nounset=1
 
     # Secrets are written for interactive shells; suspend nounset so a bare
-    # reference to an unset variable does not abort the source.
+    # reference to an unset variable does not abort the source. Only lines
+    # beginning with `export ` are sourced; everything else is skipped.
     set +u
     # shellcheck source=/dev/null
-    source "$file"
+    source <( grep -E '^export[[:space:]]' -- "$file" )
     source_status=$?
 
     [[ "$had_nounset" -eq 1 ]] && set -u
@@ -76,10 +78,10 @@ function _load_dir()
     while IFS= read -r -d '' file ; do
         found=1
         _source_file "$file" || return 1
-    done < <( find "$dir" -maxdepth 1 -type f ! -name '.*' -print0 | LC_ALL=C sort -z )
+    done < <( find "$dir" -maxdepth 1 -type f -name '*.env' ! -name '.*' -print0 | LC_ALL=C sort -z )
 
     if [[ "$found" -eq 0 ]] ; then
-        _msg "Warning: no loadable files in '$dir'"
+        _msg "Warning: no .env files to load in '$dir'"
     fi
 }
 

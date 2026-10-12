@@ -3,6 +3,7 @@
 ## Unreleased
 
 - feat(ftenv): run a command with secrets loaded from env files
+- feat(ftenv): load only .env files and their export lines
 
 ## v0.2.0 - 2025-12-08
 

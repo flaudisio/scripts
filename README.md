@@ -12,7 +12,7 @@ Run the installer to symlink every script from `bin/` into `~/.local/bin`:
 
 ## Scripts
 
-- `ftenv` — run a command with environment variables loaded from secret files.
+- `ftenv` — run a command with variables loaded from `*.env` files (`export` lines only).
 - `manage-audio.sh` — select PulseAudio ports for a headset, speakers, or the internal mic.
 - `move-to-next-monitor.sh` — move the active window to the next monitor (X11, single X screen).
 - `notify-send-as-user.sh` — send a desktop notification as the session user, even when run with

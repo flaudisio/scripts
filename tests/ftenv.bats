@@ -59,6 +59,37 @@ teardown()
     [ "$output" = "unset|yes" ]
 }
 
+@test "loads only .env files from a directory" {
+    mkdir "$TMP/secrets"
+    printf 'export KEPT=yes\n' > "$TMP/secrets/keep.env"
+    printf 'export DROPPED=yes\n' > "$TMP/secrets/notes.txt"
+
+    run bash "$FTENV" run --load "$TMP/secrets" -- bash -c 'echo "${DROPPED:-unset}|$KEPT"'
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "unset|yes" ]
+}
+
+@test "skips non-export lines in a secret file" {
+    mkdir "$TMP/secrets"
+    printf '# a comment\n\nexport GOOD=yes\nNOT_EXPORT=no\necho nope\n' > "$TMP/secrets/mixed.env"
+
+    run bash "$FTENV" run --load "$TMP/secrets/mixed.env" -- \
+        bash -c 'echo "${NOT_EXPORT:-unset}|$GOOD"'
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "unset|yes" ]
+}
+
+@test "loads an explicitly named non-.env file" {
+    printf 'export FOO=bar\n' > "$TMP/secrets.txt"
+
+    run bash "$FTENV" run --load "$TMP/secrets.txt" -- bash -c 'echo "$FOO"'
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "bar" ]
+}
+
 @test "later --load wins over earlier --load" {
     printf 'export FOO=one\n' > "$TMP/a.env"
     printf 'export FOO=two\n' > "$TMP/b.env"
