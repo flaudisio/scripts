@@ -1,4 +1,5 @@
 [tools]
+bats = "1.14"
 "pipx:bump-my-version" = "1"
 prek = "latest"
 shellcheck = "0.11"
@@ -6,6 +7,10 @@ shellcheck = "0.11"
 [tasks.lint]
 description = "Run lint"
 run = "prek run --all-files --color always"
+
+[tasks.test]
+description = "Run bats tests"
+run = "bats --print-output-on-failure tests"
 
 [tasks."bump-version:major"]
 description = "Increment the major version (X.y.z)"

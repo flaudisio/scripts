@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat(ftenv): run a command with secrets loaded from env files
+
 ## v0.2.0 - 2025-12-08
 
 - feat: add `rp-pruner.sh`
