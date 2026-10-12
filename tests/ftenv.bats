@@ -69,6 +69,15 @@ teardown()
     [ "$output" = "two" ]
 }
 
+@test "accepts -l as an alias for --load" {
+    printf 'export FOO=bar\n' > "$TMP/one.env"
+
+    run bash "$FTENV" run -l "$TMP/one.env" -- bash -c 'echo "$FOO"'
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "bar" ]
+}
+
 @test "does not clear variables already in the environment" {
     printf 'export LOADED=yes\n' > "$TMP/one.env"
     export CALLER=keep

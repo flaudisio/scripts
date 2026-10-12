@@ -26,8 +26,8 @@ Load secrets from files or directories, then run COMMAND with them exported.
 PATH may be a secret file, or a directory whose files are all loaded.
 
 Options:
-  --load PATH   Load PATH. May be repeated; later sources override earlier.
-  -h, --help    Show this help and exit.
+  -l, --load PATH   Load PATH. May be repeated; later sources override earlier.
+  -h, --help        Show this help and exit.
 
 Exit codes:
   0    success
@@ -119,7 +119,7 @@ function run_ftenv()
                 saw_separator=1
                 break
             ;;
-            --load)
+            -l|--load)
                 shift
                 if [[ $# -eq 0 ]] ; then
                     _usage_error "--load requires a PATH argument"
