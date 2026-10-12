@@ -121,11 +121,12 @@ teardown()
     [ "$status" -eq 127 ]
 }
 
-@test "fails with exit 1 when a --load path is missing" {
-    run bash "$FTENV" run --load "$TMP/missing.env" -- true
+@test "fails with exit 1 and a stderr message when a --load path is missing" {
+    run --separate-stderr bash "$FTENV" run --load "$TMP/missing.env" -- true
 
     [ "$status" -eq 1 ]
-    [[ "$output" == *"$TMP/missing.env"* ]]
+    [[ "$stderr" == *"$TMP/missing.env"* ]]
+    [ -z "$output" ]
 }
 
 @test "fails with exit 2 when -- is missing" {
