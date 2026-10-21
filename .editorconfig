@@ -19,6 +19,9 @@ indent_style = tab
 [*.{py,sh,bash}{,.tpl,.tftpl,.erb,.j2,.jinja}]
 indent_size = 4
 
+[bin/*]
+indent_size = 4
+
 [Makefile]
 indent_size = 4
 indent_style = tab

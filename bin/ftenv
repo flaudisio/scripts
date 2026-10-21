@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+#
+# ftenv
+#
+# Run a command with environment variables loaded from secret files.
+#
+##
+
+set -o pipefail
+set -u
+
+function _msg()
+{
+    echo "$*" >&2
+}
+
+function _usage()
+{
+    cat <<'EOF'
+Usage:
+  ftenv run --load PATH [--load PATH ...] -- COMMAND [ARG ...]
+  ftenv --help
+  ftenv run --help
+
+Load secrets from files or directories, then run COMMAND with them exported.
+A PATH directory contributes its *.env files. Only lines beginning with
+`export ` are loaded from each file.
+
+Options:
+  -l, --load PATH   Load PATH. May be repeated; later sources override earlier.
+  -h, --help        Show this help and exit.
+
+Exit codes:
+  0    success
+  1    runtime error (missing or unreadable --load path)
+  2    usage error
+  *    the command's own exit status
+EOF
+}
+
+function _usage_error()
+{
+    _msg "Error: $*"
+    _usage >&2
+}
+
+function _source_file()
+{
+    local file="$1"
+    local had_nounset=0
+    local source_status
+
+    [[ "$-" == *u* ]] && had_nounset=1
+
+    # Secrets are written for interactive shells; suspend nounset so a bare
+    # reference to an unset variable does not abort the source. Only lines
+    # beginning with `export ` are sourced; everything else is skipped.
+    set +u
+    # shellcheck source=/dev/null
+    source <( grep -E '^export[[:space:]]' -- "$file" )
+    source_status=$?
+
+    [[ "$had_nounset" -eq 1 ]] && set -u
+
+    if [[ "$source_status" -ne 0 ]] ; then
+        _msg "Error: failed to load secret file '$file'"
+    fi
+
+    return "$source_status"
+}
+
+function _load_dir()
+{
+    local dir="$1"
+    local found=0
+    local file
+
+    while IFS= read -r -d '' file ; do
+        found=1
+        _source_file "$file" || return 1
+    done < <( find "$dir" -maxdepth 1 -type f -name '*.env' ! -name '.*' -print0 | LC_ALL=C sort -z )
+
+    if [[ "$found" -eq 0 ]] ; then
+        _msg "Warning: no .env files to load in '$dir'"
+    fi
+}
+
+function load_path()
+{
+    local path="$1"
+
+    if [[ ! -e "$path" ]] ; then
+        _msg "Error: --load path does not exist: '$path'"
+        return 1
+    fi
+
+    if [[ ! -r "$path" ]] ; then
+        _msg "Error: --load path is not readable: '$path'"
+        return 1
+    fi
+
+    if [[ -d "$path" ]] ; then
+        _load_dir "$path"
+    else
+        _source_file "$path"
+    fi
+}
+
+function run_ftenv()
+{
+    local load_paths=()
+    local command=()
+    local saw_separator=0
+    local path
+
+    while [[ $# -gt 0 ]] ; do
+        case "$1" in
+            --)
+                shift
+                command=( "$@" )
+                saw_separator=1
+                break
+            ;;
+            -l|--load)
+                shift
+                if [[ $# -eq 0 ]] ; then
+                    _usage_error "--load requires a PATH argument"
+                    return 2
+                fi
+                load_paths+=( "$1" )
+                shift
+            ;;
+            -h|--help)
+                _usage
+                return 0
+            ;;
+            *)
+                _usage_error "unexpected argument: '$1'"
+                return 2
+            ;;
+        esac
+    done
+
+    if [[ "$saw_separator" -eq 0 ]] ; then
+        _usage_error "missing '--' before the command"
+        return 2
+    fi
+
+    if [[ "${#command[@]}" -eq 0 ]] ; then
+        _usage_error "no command given after '--'"
+        return 2
+    fi
+
+    if [[ "${#load_paths[@]}" -eq 0 ]] ; then
+        _usage_error "at least one --load PATH is required"
+        return 2
+    fi
+
+    for path in "${load_paths[@]}" ; do
+        load_path "$path" || return 1
+    done
+
+    exec "${command[@]}"
+}
+
+function main()
+{
+    if [[ $# -eq 0 ]] ; then
+        _usage_error "missing 'run' subcommand"
+        return 2
+    fi
+
+    case "$1" in
+        -h|--help)
+            _usage
+            return 0
+        ;;
+        run)
+            shift
+            run_ftenv "$@"
+        ;;
+        *)
+            _usage_error "unknown command: '$1'"
+            return 2
+        ;;
+    esac
+}
+
+main "$@"
