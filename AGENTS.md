@@ -1,41 +1,57 @@
 # AGENTS.md
 
-Personal collection of standalone Bash helper scripts. `install.sh` symlinks every `bin/*`
-script into `~/.local/bin`. There is no shared library or build step; scripts are covered by
-a bats suite under `tests/`.
+Personal collection of standalone Bash helpers in `bin/`. No shared library, no build step: each
+script stands alone, `install.sh` symlinks every `bin/*` entry into `~/.local/bin`, and `tests/`
+holds a bats suite.
 
 ## Commands
 
-- `mise run lint` — runs `prek run --all-files` against `.pre-commit-config.yaml` (shellcheck,
-  yamllint, whitespace/EOF fixers). Some hooks rewrite files in place, so re-run it after editing.
-- `mise run test` — runs the `tests/*.bats` suite with bats.
-- `mise install` — installs the pinned tools (`prek`, `shellcheck`, `bump-my-version`, `bats`).
-- To verify a script, run it directly and pass `mise run lint`. Many scripts need root or real
-  hardware (PulseAudio, X11, LUKS, restic) and cannot be exercised in CI.
+- `mise install` — installs the pinned tools (`bats`, `shellcheck`, `prek`, `bump-my-version`).
+- `mise run lint` — `prek run --all-files` over `.pre-commit-config.yaml` (shellcheck, yamllint,
+  whitespace/EOF/line-ending fixers). Some hooks rewrite files, so re-run after editing.
+- `mise run test` — `bats --print-output-on-failure tests`.
+- Single file or case: `bats tests/ftenv.bats`, `bats --filter 'missing' tests/ftenv.bats`.
+- CI runs exactly these two tasks on PRs and pushes to `main` (`.github/workflows/`).
+
+## Testing
+
+- Only `bin/ftenv` has tests. Add `tests/<basename>.bats` once a new script carries real logic.
+- Follow `tests/ftenv.bats`: `setup`/`teardown` around `mktemp -d`, then run the script under test
+  as `bash "$BATS_TEST_DIRNAME/../bin/<name>"`; assert on `status`, `output`, and `stderr`.
+- `install.sh` symlinks rather than copies, so edits under `bin/` reach the installed command
+  immediately; only new files need another `./install.sh`.
+- Scripts needing root or real hardware (PulseAudio, X11, LUKS, resticprofile) get lint plus a
+  manual run, not CI tests; do not mock them into the suite.
 
 ## Script conventions
 
-Load and follow the `bash-scripting` skill for all Bash work (shebang, `set -o pipefail` without
-`set -e`, 4-space indent, `function name()` with the brace on its own line, `main "$@"`, quoting,
-`: "${VAR:=default}"` defaults). Repo-specific deltas:
+Follow the `bash-scripting` skill for all Bash work (`function name()` with the brace on its own
+line, `main "$@"`, quoting, `: "${VAR:=default}"` defaults). Repo-specific notes:
 
-- Reuse the existing `_msg`/`_info`/`_error` helpers to send diagnostics to stderr.
-- One legacy exception to the skill's shebang rule: `move-to-next-monitor.sh` uses `/bin/bash`.
+- `mise run lint` is the style gate; indent 4 spaces (`.editorconfig` covers `*.sh` and `bin/*`).
+- Start with `#!/usr/bin/env bash`, `set -o pipefail`, and `set -u`; no `set -e` in new scripts.
+  `rp-pruner.sh` and `notify-send-as-user.sh` predate this rule; leave them as they are.
+- Diagnostics go to stderr through a per-script `_msg` helper (`_info`/`_error` where present).
+  Helpers are copied per script, never sourced from a sibling script.
+- Every file in `bin/` gets symlinked into `~/.local/bin`, so keep helpers and data out of it; each
+  entry must be executable and start with a shebang (`check-executables-have-shebangs` hook).
+- `move-to-next-monitor.sh` keeps its legacy `/bin/bash` shebang; do not "fix" it.
 
 ## Releases
 
-- `mise run bump-version:{major,minor,patch}` drives bump-my-version (`.bumpversion.toml`): it
-  inserts the new version heading into `CHANGELOG.md`, commits, and tags `vX.Y.Z`. Add the
-  release's changelog bullets under `## Unreleased` before bumping.
+- Write the release bullets under `## Unreleased` in `CHANGELOG.md` by hand (no git-cliff here),
+  then run `mise run bump-version:{major,minor,patch}`. bump-my-version rewrites `CHANGELOG.md`,
+  commits, and tags `vX.Y.Z`; no other file records the version.
 - `mise run git-push` pushes the branch together with tags.
 
 ## Commits
 
-Conventional Commits. The scope is the script basename without `.sh`
-(`fix(manage-audio): ...`, `refactor(rp-pruner): ...`), or `install`/`.github` for repo
-infrastructure.
+Conventional Commits; the scope is the script basename without `.sh` (`fix(manage-audio): ...`,
+`refactor(rp-pruner): ...`), or `install`/`.github` for repo infrastructure.
 
 ## Config ownership
 
-Shared config is sourced from the `git-repo-scaffold` skill's `templates/common/`; pull updates
-from there when the template changes rather than hand-tuning the common files.
+`.editorconfig`, `.gitignore`, `.pre-commit-config.yaml`, `.yamllint.yaml`, `mise.toml`, and
+`.bumpversion.toml` derive from the `git-repo-scaffold` skill's `templates/common/`. This repo
+deliberately diverges (bats tasks, per-part bump tasks, no git-cliff), so merge template updates
+by hand rather than copying files over.
