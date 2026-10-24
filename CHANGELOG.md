@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat(manage-audio): load per-machine settings from conf/manage-audio.conf
 - feat(ftenv): run a command with secrets loaded from env files
 - feat(ftenv): load only .env files and their export lines
 

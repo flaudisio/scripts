@@ -4,10 +4,29 @@ set -o pipefail
 
 readonly SCRIPT_NAME="manage-audio"
 
+SCRIPT_PATH="$( readlink --canonicalize "${BASH_SOURCE[0]}" )"
+readonly SCRIPT_PATH
+readonly SCRIPT_DIR="${SCRIPT_PATH%/*}"
+
+CONFIG_FILE="$( readlink --canonicalize "${SCRIPT_DIR}/../conf/manage-audio.conf" )"
+readonly CONFIG_FILE
+
+# Device descriptions and port names differ per machine, so they come from a
+# gitignored config file (`$CONFIG_FILE`); see `ls-ports` to build it.
+if [[ -f "$CONFIG_FILE" ]] ; then
+    # shellcheck source=/dev/null
+    source "$CONFIG_FILE"
+fi
+
 : "${DISABLED:=""}"
+
+: "${SOURCE_DESCRIPTION:=""}"
+: "${SINK_DESCRIPTION:=""}"
 
 : "${HEADSET_SOURCE_PORT="[In] Headset"}"
 : "${HEADSET_SINK_PORT="[Out] Headphones"}"
+: "${SPEAKER_SINK_PORT="[Out] Speaker"}"
+: "${INTERNAL_SOURCE_PORT="[In] Mic2"}"
 
 : "${MIC_VOLUME:="28%"}"
 
@@ -34,12 +53,33 @@ function get_pulse_audio_resource()
     local -r type="$1"
     local -r search="$2"
 
+    if [[ -z "$search" ]] ; then
+        _msg "Error: no description set for '$type'; configure it in $CONFIG_FILE"
+        return 1
+    fi
+
     if ! pactl --format json list "$type" \
         | jq -r --arg search "$search" '.[] | select(.description | contains($search))'
     then
         _msg "Error: could not get PulseAudio resource '$type'"
         return 1
     fi
+}
+
+# Print the device descriptions and their ports in config file syntax, so the
+# output can be pasted into `$CONFIG_FILE`.
+function print_device_config()
+{
+    local -r key="$1"
+    local -r type="$2"
+    local -r search="$3"
+
+    pactl --format json list "$type" \
+        | jq -r --arg key "$key" --arg search "$search" '
+            .[]
+            | select($search == "" or (.description | contains($search)))
+            | "\($key)=\"\(.description)\"",
+              ( .ports[]? | "# \(.name)" )'
 }
 
 function set_sink_port()
@@ -83,27 +123,21 @@ function main()
         exit 0
     fi
 
-    # pactl list sources | egrep 'Name|Description'
-    local source_description="Tiger Lake-LP Smart Sound Technology Audio Controller Headset Mono Microphone + Headphones Stereo Microphone"
-
-    # pactl list sinks | egrep 'Name|Description'
-    local sink_description="Tiger Lake-LP Smart Sound Technology Audio Controller Speaker + Headphones"
-
     case "$1" in
         ls-ports)
-            echo "Input ports (sources):"
-            get_pulse_audio_resource "sources" "$description" | jq -r '.ports[].name'
+            echo "# Values for $CONFIG_FILE; uncomment the port lines you need."
             echo
-            echo "Output ports (sinks):"
-            get_pulse_audio_resource "sinks" "$sink_description" | jq -r '.ports[].name'
+            print_device_config "SOURCE_DESCRIPTION" "sources" "$SOURCE_DESCRIPTION"
+            echo
+            print_device_config "SINK_DESCRIPTION" "sinks" "$SINK_DESCRIPTION"
         ;;
         use-headset)
-            if ! set_source_port "$source_description" "$HEADSET_SOURCE_PORT" "$MIC_VOLUME" ; then
+            if ! set_source_port "$SOURCE_DESCRIPTION" "$HEADSET_SOURCE_PORT" "$MIC_VOLUME" ; then
                 _error "Error selecting headset mic. Run script in console for details."
                 exit 1
             fi
 
-            if ! set_sink_port "$sink_description" "$HEADSET_SINK_PORT" ; then
+            if ! set_sink_port "$SINK_DESCRIPTION" "$HEADSET_SINK_PORT" ; then
                 _error "Error selecting headphones. Run script in console for details."
                 exit 1
             fi
@@ -111,7 +145,7 @@ function main()
             # _info "Using headset"
         ;;
         use-speakers)
-            if ! set_sink_port "$sink_description" "[Out] Speaker" ; then
+            if ! set_sink_port "$SINK_DESCRIPTION" "$SPEAKER_SINK_PORT" ; then
                 _error "Error selecting speakers. Run script in console for details."
                 exit 1
             fi
@@ -119,7 +153,7 @@ function main()
             # _info "Using speakers"
         ;;
         use-internal-mic)
-            if ! set_source_port "$source_description" "[In] Mic2" ; then
+            if ! set_source_port "$SOURCE_DESCRIPTION" "$INTERNAL_SOURCE_PORT" ; then
                 _error "Error selecting internal mic. Run script in console for details."
                 exit 1
             fi
@@ -128,6 +162,7 @@ function main()
         ;;
         *)
             echo "Usage: $0 <ls-ports|use-headset|use-speakers|use-internal-mic>" >&2
+            echo "Config: $CONFIG_FILE" >&2
             exit 2
         ;;
     esac
