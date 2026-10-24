@@ -78,8 +78,11 @@ function print_device_config()
         | jq -r --arg key "$key" --arg search "$search" '
             .[]
             | select($search == "" or (.description | contains($search)))
-            | "\($key)=\"\(.description)\"",
-              ( .ports[]? | "# \(.name)" )'
+            | "# Device for \($key):",
+              "\($key)=\(.description | @sh)",
+              "# Ports on this device:",
+              ( .ports[]? | "#   \(.name)" ),
+              ""'
 }
 
 function set_sink_port()
@@ -128,7 +131,6 @@ function main()
             echo "# Values for $CONFIG_FILE; uncomment the port lines you need."
             echo
             print_device_config "SOURCE_DESCRIPTION" "sources" "$SOURCE_DESCRIPTION"
-            echo
             print_device_config "SINK_DESCRIPTION" "sinks" "$SINK_DESCRIPTION"
         ;;
         use-headset)
